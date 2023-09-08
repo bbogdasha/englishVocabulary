@@ -1,6 +1,6 @@
 package com.bogdan.vocabulary.controller;
 
-import com.bogdan.vocabulary.model.Language;
+import com.bogdan.vocabulary.dto.LanguageDto;
 import com.bogdan.vocabulary.service.language.LanguageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,10 +23,10 @@ public class LanguageController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Language>> getAllLanguages() {
-        List<Language> languages = languageService.getAllLanguages();
-        return languages != null && !languages.isEmpty()
-                ? new ResponseEntity<>(languages, HttpStatus.OK)
+    public ResponseEntity<List<LanguageDto>> getAllLanguages() {
+        List<LanguageDto> languagesDto = languageService.getAllLanguages();
+        return languagesDto != null && !languagesDto.isEmpty()
+                ? new ResponseEntity<>(languagesDto, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
