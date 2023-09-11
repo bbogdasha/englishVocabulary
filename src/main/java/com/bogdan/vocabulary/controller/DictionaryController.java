@@ -30,17 +30,15 @@ public class DictionaryController {
     @GetMapping
     public ResponseEntity<List<DictionaryDto>> getAllDictionaries() {
         List<DictionaryDto> dictionariesDto = dictionaryService.getAllDictionaries();
-        return dictionariesDto != null && !dictionariesDto.isEmpty()
+        return !dictionariesDto.isEmpty()
                 ? new ResponseEntity<>(dictionariesDto, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<DictionaryDto> patchDictionary(@PathVariable Long id, @RequestBody Map<String, Object> changes) {
         DictionaryDto patchedDictionary = dictionaryService.patchDictionary(id, changes);
-        return patchedDictionary != null
-                ? new ResponseEntity<>(patchedDictionary, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(patchedDictionary, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

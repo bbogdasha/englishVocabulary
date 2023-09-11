@@ -25,8 +25,8 @@ public class LanguageController {
     @GetMapping
     public ResponseEntity<List<LanguageDto>> getAllLanguages() {
         List<LanguageDto> languagesDto = languageService.getAllLanguages();
-        return languagesDto != null && !languagesDto.isEmpty()
+        return !languagesDto.isEmpty()
                 ? new ResponseEntity<>(languagesDto, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

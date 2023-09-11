@@ -37,7 +37,7 @@
             ( 'German' ),
             ( 'Polish' ),
             ( 'Swedish' ),
-            ( 'Slovak' ),
+            ( 'Slovak' );
         </sql>
     </changeSet>
 
