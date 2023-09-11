@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -13,16 +15,8 @@ import lombok.NoArgsConstructor;
 public class Language {
 
     @Id
-    @SequenceGenerator(
-            name = "language_id_sequence",
-            sequenceName = "language_id_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "language_id_sequence"
-    )
-    private Integer languageId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID languageId;
 
     @Column(name = "language_name", nullable = false)
     private String languageName;
