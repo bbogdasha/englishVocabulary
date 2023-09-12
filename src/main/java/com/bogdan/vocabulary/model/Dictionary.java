@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -24,12 +26,9 @@ public class Dictionary {
     )
     private Integer dictionaryId;
 
-    @Column(name = "native_language_id", nullable = false)
-    private Integer nativeLanguageId;
+    private UUID nativeLanguageId;
 
-    @Column(name = "learn_language_id", nullable = false)
-    private Integer learnLanguageId;
+    private UUID learnLanguageId;
 
-    @Column(name = "dictionary_name", nullable = false)
     private String dictionaryName;
 }

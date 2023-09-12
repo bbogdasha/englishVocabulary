@@ -18,6 +18,5 @@ public class Language {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID languageId;
 
-    @Column(name = "language_name", nullable = false)
     private String languageName;
 }

@@ -1,42 +1,34 @@
 package com.bogdan.vocabulary.service.dictionary;
 
 import com.bogdan.vocabulary.dto.DictionaryDto;
-import com.bogdan.vocabulary.exception.dictionary.DictionaryValidationException;
-import com.bogdan.vocabulary.exception.dictionary.DictionaryNotFoundException;
+import com.bogdan.vocabulary.dto.LanguageDto;
+import com.bogdan.vocabulary.exception.dict_lang.VocabularyBusinessException;
+import com.bogdan.vocabulary.exception.dict_lang.VocabularyNotFoundException;
 import com.bogdan.vocabulary.mapper.DictionaryMapper;
 import com.bogdan.vocabulary.model.Dictionary;
 import com.bogdan.vocabulary.repository.DictionaryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.bogdan.vocabulary.service.language.LanguageServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Pattern;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class DictionaryServiceImpl implements DictionaryService {
 
     private final DictionaryRepository dictionaryRepository;
 
-    @Autowired
-    public DictionaryServiceImpl(DictionaryRepository dictionaryRepository) {
-        this.dictionaryRepository = dictionaryRepository;
-    }
+    private final LanguageServiceImpl languageService;
+
+    private static final String DICTIONARY_NOT_FOUND = "Dictionary with id = '%d' not found.";
 
     @Override
     public DictionaryDto createDictionary(DictionaryDto dictionaryDto) {
-        boolean isValid = Pattern.matches(
-                "^[a-zA-Z0-9]+('[a-zA-Z0-9])?[a-zA-Z0-9]{0,36}", dictionaryDto.getDictionaryName());
-
-        if (!isValid) {
-            throw new DictionaryValidationException("Invalid 'name' format.");
-        }
-
+        checkConflict(dictionaryDto);
         Dictionary dictionary = DictionaryMapper.mapToDictionary(dictionaryDto);
         Dictionary savedDictionary = dictionaryRepository.save(dictionary);
         return DictionaryMapper.mapToDictionaryDto(savedDictionary);
@@ -51,31 +43,38 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
+    public DictionaryDto getDictionary(Long id) {
+        Optional<Dictionary> optionalDictionary = dictionaryRepository.findById(id);
+
+        if (optionalDictionary.isEmpty()) {
+            throw new VocabularyNotFoundException(String.format(DICTIONARY_NOT_FOUND, id));
+        }
+
+        return DictionaryMapper.mapToDictionaryDto(optionalDictionary.get());
+    }
+
+    @Override
     public DictionaryDto patchDictionary(Long id, Map<String, Object> changes) {
         Optional<Dictionary> optionalDictionary = dictionaryRepository.findById(id);
 
         if (optionalDictionary.isEmpty()) {
-            throw new DictionaryNotFoundException("Dictionary with id: " + id + " not found.");
+            throw new VocabularyNotFoundException(String.format(DICTIONARY_NOT_FOUND, id));
         }
 
         Dictionary savedDictionary = optionalDictionary.get();
 
-        boolean isValid = Pattern.matches(
-                "^[a-zA-Z0-9]+('[a-zA-Z0-9])?[a-zA-Z0-9]{0,36}", savedDictionary.getDictionaryName());
-
-        if (!isValid) {
-            throw new DictionaryValidationException("Invalid 'name' format.");
-        }
-
         changes.forEach((change, value) -> {
             switch (change) {
-                case "nativeLanguageId" -> savedDictionary.setNativeLanguageId((Integer) value);
-                case "learnLanguageId" -> savedDictionary.setLearnLanguageId((Integer) value);
+                case "nativeLanguageId" -> savedDictionary.setNativeLanguageId(UUID.fromString(value.toString()));
+                case "learnLanguageId" -> savedDictionary.setLearnLanguageId(UUID.fromString(value.toString()));
                 case "dictionaryName" -> savedDictionary.setDictionaryName(value.toString());
             }
         });
 
-        return DictionaryMapper.mapToDictionaryDto(savedDictionary);
+        dictionaryRepository.save(savedDictionary);
+        DictionaryDto dictionaryDto = DictionaryMapper.mapToDictionaryDto(savedDictionary);
+        checkConflict(dictionaryDto);
+        return dictionaryDto;
     }
 
     @Override
@@ -83,9 +82,18 @@ public class DictionaryServiceImpl implements DictionaryService {
         Optional<Dictionary> optionalDictionary = dictionaryRepository.findById(id);
 
         if (optionalDictionary.isEmpty()) {
-            throw new DictionaryNotFoundException("Dictionary with id: " + id + " not found.");
+            throw new VocabularyNotFoundException(String.format(DICTIONARY_NOT_FOUND, id));
         }
 
         dictionaryRepository.deleteById(id);
+    }
+
+    private void checkConflict(DictionaryDto dictionaryDto) {
+        LanguageDto nativeLanguage = languageService.getLanguage(UUID.fromString(dictionaryDto.getNativeLanguageId()));
+        LanguageDto learnLanguage = languageService.getLanguage(UUID.fromString(dictionaryDto.getLearnLanguageId()));
+
+        if (nativeLanguage.getLanguageId() == learnLanguage.getLanguageId()) {
+            throw new VocabularyBusinessException("You can't create dictionary with the same languages.");
+        }
     }
 }
