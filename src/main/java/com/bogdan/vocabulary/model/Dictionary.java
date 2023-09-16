@@ -2,13 +2,16 @@ package com.bogdan.vocabulary.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "dictionaries")
@@ -31,4 +34,7 @@ public class Dictionary {
     private UUID learnLanguageId;
 
     private String dictionaryName;
+
+    @OneToMany(mappedBy = "dictionary", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Word> words;
 }

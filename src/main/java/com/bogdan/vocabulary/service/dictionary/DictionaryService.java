@@ -1,12 +1,10 @@
 package com.bogdan.vocabulary.service.dictionary;
 
 import com.bogdan.vocabulary.dto.DictionaryDto;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
-@Repository
 public interface DictionaryService {
 
     List<DictionaryDto> getAllDictionaries();

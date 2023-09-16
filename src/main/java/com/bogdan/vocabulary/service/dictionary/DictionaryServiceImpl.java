@@ -4,7 +4,7 @@ import com.bogdan.vocabulary.dto.DictionaryDto;
 import com.bogdan.vocabulary.dto.LanguageDto;
 import com.bogdan.vocabulary.exception.dict_lang.VocabularyBusinessException;
 import com.bogdan.vocabulary.exception.dict_lang.VocabularyNotFoundException;
-import com.bogdan.vocabulary.mapper.DictionaryMapper;
+import com.bogdan.vocabulary.converter.DictionaryConverter;
 import com.bogdan.vocabulary.model.Dictionary;
 import com.bogdan.vocabulary.repository.DictionaryRepository;
 import com.bogdan.vocabulary.service.language.LanguageServiceImpl;
@@ -24,14 +24,19 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     private final LanguageServiceImpl languageService;
 
-    private static final String DICTIONARY_NOT_FOUND = "Dictionary with id = '%d' not found.";
+    private final DictionaryConverter dictionaryConverter;
+
+    private static final String DICTIONARY_NOT_FOUND = "Dictionary with 'id = %d' not found.";
 
     @Override
     public DictionaryDto createDictionary(DictionaryDto dictionaryDto) {
         checkConflict(dictionaryDto);
-        Dictionary dictionary = DictionaryMapper.mapToDictionary(dictionaryDto);
+
+        Dictionary dictionary = dictionaryConverter.convertToEntity(dictionaryDto);
+        dictionary.setWords(new ArrayList<>());
         Dictionary savedDictionary = dictionaryRepository.save(dictionary);
-        return DictionaryMapper.mapToDictionaryDto(savedDictionary);
+
+        return dictionaryConverter.convertToDto(savedDictionary);
     }
 
     @Override
@@ -39,7 +44,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         List<Dictionary> dictionaries = dictionaryRepository.findAll();
         return dictionaries.isEmpty()
                 ? new ArrayList<>()
-                : dictionaries.stream().map(DictionaryMapper::mapToDictionaryDto).collect(Collectors.toList());
+                : dictionaries.stream().map(dictionaryConverter::convertToDto).collect(Collectors.toList());
     }
 
     @Override
@@ -50,7 +55,7 @@ public class DictionaryServiceImpl implements DictionaryService {
             throw new VocabularyNotFoundException(String.format(DICTIONARY_NOT_FOUND, id));
         }
 
-        return DictionaryMapper.mapToDictionaryDto(optionalDictionary.get());
+        return dictionaryConverter.convertToDto(optionalDictionary.get());
     }
 
     @Override
@@ -72,7 +77,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         });
 
         dictionaryRepository.save(savedDictionary);
-        DictionaryDto dictionaryDto = DictionaryMapper.mapToDictionaryDto(savedDictionary);
+        DictionaryDto dictionaryDto = dictionaryConverter.convertToDto(savedDictionary);
         checkConflict(dictionaryDto);
         return dictionaryDto;
     }
@@ -93,7 +98,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         LanguageDto learnLanguage = languageService.getLanguage(UUID.fromString(dictionaryDto.getLearnLanguageId()));
 
         if (nativeLanguage.getLanguageId() == learnLanguage.getLanguageId()) {
-            throw new VocabularyBusinessException("You can't create dictionary with the same languages.");
+            throw new VocabularyBusinessException("You can't create/update dictionary with the same languages.");
         }
     }
 }

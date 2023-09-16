@@ -1,7 +1,9 @@
 package com.bogdan.vocabulary.controller;
 
 import com.bogdan.vocabulary.dto.DictionaryDto;
+import com.bogdan.vocabulary.dto.View;
 import com.bogdan.vocabulary.service.dictionary.DictionaryServiceImpl;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +26,12 @@ public class DictionaryController {
 
     @PostMapping
     public ResponseEntity<DictionaryDto> createDictionary(@Valid @RequestBody DictionaryDto dictionaryDto) {
-        DictionaryDto savedDictionary = dictionaryService.createDictionary(dictionaryDto);
-        return new ResponseEntity<>(savedDictionary, HttpStatus.CREATED);
+        DictionaryDto createdDictionary = dictionaryService.createDictionary(dictionaryDto);
+        return new ResponseEntity<>(createdDictionary, HttpStatus.CREATED);
     }
 
     @GetMapping
+    @JsonView(value = View.SummaryDictionary.class)
     public ResponseEntity<List<DictionaryDto>> getAllDictionaries() {
         List<DictionaryDto> dictionariesDto = dictionaryService.getAllDictionaries();
         return !dictionariesDto.isEmpty()
@@ -36,15 +39,15 @@ public class DictionaryController {
                 : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<DictionaryDto> patchDictionary(@PathVariable Long id, @RequestBody Map<String, Object> changes) {
-        DictionaryDto patchedDictionary = dictionaryService.patchDictionary(id, changes);
+    @PatchMapping("/{dictionaryId}")
+    public ResponseEntity<DictionaryDto> patchDictionary(@PathVariable Long dictionaryId, @RequestBody Map<String, Object> changes) {
+        DictionaryDto patchedDictionary = dictionaryService.patchDictionary(dictionaryId, changes);
         return new ResponseEntity<>(patchedDictionary, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteDictionary(@PathVariable Long id) {
-        dictionaryService.deleteDictionary(id);
+    @DeleteMapping("/{dictionaryId}")
+    public ResponseEntity<String> deleteDictionary(@PathVariable Long dictionaryId) {
+        dictionaryService.deleteDictionary(dictionaryId);
         return new ResponseEntity<>("Dictionary successfully deleted!", HttpStatus.OK);
     }
 }

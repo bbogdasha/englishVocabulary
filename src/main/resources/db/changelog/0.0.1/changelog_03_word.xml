@@ -1,0 +1,44 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="bogdan" id="vocabulary-3.0">
+        <createSequence sequenceName="word_id_sequence" dataType="bigint" incrementBy="1" maxValue="10000" minValue="1" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-3.1">
+        <createTable tableName="words">
+            <column name="word_id" type="SERIAL" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="word_pk"/>
+            </column>
+            <column name="word" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="translation" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="example" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dictionary_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-3.2">
+        <addForeignKeyConstraint baseColumnNames="dictionary_id"
+                                 baseTableName="words"
+                                 constraintName="fk_dictionary_id"
+                                 referencedColumnNames="dictionary_id"
+                                 referencedTableName="dictionaries"
+                                 validate="true"/>
+    </changeSet>
+
+</databaseChangeLog>
