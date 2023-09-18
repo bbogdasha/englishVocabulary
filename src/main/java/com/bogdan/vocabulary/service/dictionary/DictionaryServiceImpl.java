@@ -2,8 +2,8 @@ package com.bogdan.vocabulary.service.dictionary;
 
 import com.bogdan.vocabulary.dto.DictionaryDto;
 import com.bogdan.vocabulary.dto.LanguageDto;
-import com.bogdan.vocabulary.exception.dict_lang.VocabularyBusinessException;
-import com.bogdan.vocabulary.exception.dict_lang.VocabularyNotFoundException;
+import com.bogdan.vocabulary.exception.generalException.VocabularyBusinessException;
+import com.bogdan.vocabulary.exception.generalException.VocabularyNotFoundException;
 import com.bogdan.vocabulary.converter.DictionaryConverter;
 import com.bogdan.vocabulary.model.Dictionary;
 import com.bogdan.vocabulary.repository.DictionaryRepository;
@@ -29,6 +29,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     private static final String DICTIONARY_NOT_FOUND = "Dictionary with 'id = %d' not found.";
 
     @Override
+    @Transactional
     public DictionaryDto createDictionary(DictionaryDto dictionaryDto) {
         checkConflict(dictionaryDto);
 
@@ -40,6 +41,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<DictionaryDto> getAllDictionaries() {
         List<Dictionary> dictionaries = dictionaryRepository.findAll();
         return dictionaries.isEmpty()
@@ -48,6 +50,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DictionaryDto getDictionary(Long id) {
         Optional<Dictionary> optionalDictionary = dictionaryRepository.findById(id);
 
@@ -59,6 +62,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
+    @Transactional
     public DictionaryDto patchDictionary(Long id, Map<String, Object> changes) {
         Optional<Dictionary> optionalDictionary = dictionaryRepository.findById(id);
 
@@ -68,6 +72,11 @@ public class DictionaryServiceImpl implements DictionaryService {
 
         Dictionary savedDictionary = optionalDictionary.get();
 
+        if (!savedDictionary.getWords().isEmpty() &&
+                (changes.containsKey("nativeLanguageId") || changes.containsKey("learnLanguageId"))) {
+            throw new VocabularyBusinessException("You cannot change languages if there are already words in the dictionary.");
+        }
+
         changes.forEach((change, value) -> {
             switch (change) {
                 case "nativeLanguageId" -> savedDictionary.setNativeLanguageId(UUID.fromString(value.toString()));
@@ -76,13 +85,16 @@ public class DictionaryServiceImpl implements DictionaryService {
             }
         });
 
-        dictionaryRepository.save(savedDictionary);
         DictionaryDto dictionaryDto = dictionaryConverter.convertToDto(savedDictionary);
         checkConflict(dictionaryDto);
+
+        dictionaryRepository.save(savedDictionary);
+
         return dictionaryDto;
     }
 
     @Override
+    @Transactional
     public void deleteDictionary(Long id) {
         Optional<Dictionary> optionalDictionary = dictionaryRepository.findById(id);
 

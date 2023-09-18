@@ -1,4 +1,4 @@
-package com.bogdan.vocabulary.exception.dict_lang;
+package com.bogdan.vocabulary.exception;
 
 import java.time.LocalDateTime;
 import java.util.Map;

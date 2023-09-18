@@ -11,7 +11,7 @@
 
     <changeSet author="bogdan" id="vocabulary-3.1">
         <createTable tableName="words">
-            <column name="word_id" type="SERIAL" autoIncrement="true">
+            <column name="word_id" type="INTEGER" defaultValueComputed="nextval('word_id_sequence')">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="word_pk"/>
             </column>
             <column name="word" type="VARCHAR(255)">

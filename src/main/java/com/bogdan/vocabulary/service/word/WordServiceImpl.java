@@ -4,7 +4,7 @@ import com.bogdan.vocabulary.converter.DictionaryConverter;
 import com.bogdan.vocabulary.converter.WordConverter;
 import com.bogdan.vocabulary.dto.DictionaryDto;
 import com.bogdan.vocabulary.dto.WordDto;
-import com.bogdan.vocabulary.exception.dict_lang.VocabularyNotFoundException;
+import com.bogdan.vocabulary.exception.generalException.VocabularyNotFoundException;
 import com.bogdan.vocabulary.model.Dictionary;
 import com.bogdan.vocabulary.model.Word;
 import com.bogdan.vocabulary.repository.WordRepository;
@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,11 +33,13 @@ public class WordServiceImpl implements WordService {
     private static final String WORD_NOT_FOUND = "Word with 'id = %d' not found.";
 
     @Override
+    @Transactional(readOnly = true)
     public DictionaryDto getAllWordsByDictionaryId(Long dictionaryId) {
         return dictionaryService.getDictionary(dictionaryId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public WordDto getWordById(Long dictionaryId, Long wordId) {
         dictionaryService.getDictionary(dictionaryId);
 
@@ -54,6 +53,7 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
+    @Transactional
     public List<WordDto> createWords(Long dictionaryId, List<WordDto> wordsDto) {
         DictionaryDto dictionaryDto = dictionaryService.getDictionary(dictionaryId);
         Dictionary dictionary = dictionaryConverter.convertToEntity(dictionaryDto);
@@ -62,6 +62,7 @@ public class WordServiceImpl implements WordService {
 
         if (!wordsDto.isEmpty()) {
             for (WordDto wordDto : wordsDto) {
+                refactoringWord(wordDto);
                 Word word = wordConverter.convertToEntity(wordDto);
                 word.setCreatedAt(LocalDateTime.now());
                 word.setDictionary(dictionary);
@@ -78,11 +79,29 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
+    @Transactional
     public WordDto patchWord(Long dictionaryId, Long wordId, Map<String, Object> changes) {
-        return null;
+        WordDto wordDto = getWordById(dictionaryId, wordId);
+
+        refactoringWord(wordDto);
+
+        Word patchedWord = wordConverter.convertToEntity(wordDto);
+
+        changes.forEach((change, value) -> {
+            switch (change) {
+                case "word" -> patchedWord.setWord(value.toString());
+                case "translation" -> patchedWord.setTranslation(value.toString());
+                case "example" -> patchedWord.setExample(value.toString());
+            }
+        });
+
+        wordRepository.save(patchedWord);
+
+        return wordConverter.convertToDto(patchedWord);
     }
 
     @Override
+    @Transactional
     public void deleteWord(Long dictionaryId, Long wordId) {
         DictionaryDto dictionaryDto = dictionaryService.getDictionary(dictionaryId);
         Dictionary dictionary = dictionaryConverter.convertToEntity(dictionaryDto);
@@ -95,5 +114,15 @@ public class WordServiceImpl implements WordService {
 
         dictionary.getWords().remove(optionalWord.get());
         wordRepository.delete(wordId);
+    }
+
+    private void refactoringWord(WordDto wordDto) {
+        wordDto.setWord(wordDto.getWord().trim());
+        wordDto.setTranslation(wordDto.getTranslation().trim());
+        wordDto.setExample(wordDto.getExample().trim());
+
+        if (wordDto.getWord().contains("\n") || wordDto.getWord().contains("\r")) {
+            wordDto.setWord(wordDto.getWord().replaceAll("\r\n|\r|\n", " "));
+        }
     }
 }

@@ -1,7 +1,7 @@
 package com.bogdan.vocabulary.service.language;
 
 import com.bogdan.vocabulary.dto.LanguageDto;
-import com.bogdan.vocabulary.exception.dict_lang.VocabularyNotFoundException;
+import com.bogdan.vocabulary.exception.generalException.VocabularyNotFoundException;
 import com.bogdan.vocabulary.converter.LanguageConverter;
 import com.bogdan.vocabulary.model.Language;
 import com.bogdan.vocabulary.repository.LanguageRepository;

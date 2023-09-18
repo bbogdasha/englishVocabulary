@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -17,7 +16,6 @@ public interface WordRepository extends JpaRepository<Word, Long> {
     Optional<Word> findWordByDictionaryIdAndWordId(Long dictionaryId, Long wordId);
 
     @Modifying
-    @Transactional
     @Query(value = "delete from words where word_id = :wordId", nativeQuery = true)
     void delete(Long wordId);
 }

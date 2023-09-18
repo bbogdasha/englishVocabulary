@@ -1,4 +1,4 @@
-package com.bogdan.vocabulary.exception.dict_lang;
+package com.bogdan.vocabulary.exception.generalException;
 
 public class VocabularyBusinessException extends RuntimeException {
 
