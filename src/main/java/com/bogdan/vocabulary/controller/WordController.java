@@ -1,7 +1,8 @@
 package com.bogdan.vocabulary.controller;
 
-import com.bogdan.vocabulary.dto.DictionaryDto;
+import com.bogdan.vocabulary.dto.PageSettingsDto;
 import com.bogdan.vocabulary.dto.WordDto;
+import com.bogdan.vocabulary.model.PageSettings;
 import com.bogdan.vocabulary.service.word.WordServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +34,11 @@ public class WordController {
     }
 
     @GetMapping("/words")
-    public ResponseEntity<DictionaryDto> getAllDictionaryWords(@PathVariable Long dictionaryId) {
-        DictionaryDto dictionaryDto = wordService.getAllWordsByDictionaryId(dictionaryId);
-        return !dictionaryDto.getWords().isEmpty()
-                ? new ResponseEntity<>(dictionaryDto, HttpStatus.OK)
+    public ResponseEntity<PageSettingsDto<WordDto>> getAllDictionaryWords(@PathVariable Long dictionaryId, PageSettings pageSettings) {
+        PageSettingsDto<WordDto> wordsDto = wordService.getAllWordsByDictionaryId(dictionaryId, pageSettings);
+
+        return !wordsDto.getContent().isEmpty()
+                ? new ResponseEntity<>(wordsDto, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

@@ -3,13 +3,16 @@ package com.bogdan.vocabulary.service.word;
 import com.bogdan.vocabulary.converter.DictionaryConverter;
 import com.bogdan.vocabulary.converter.WordConverter;
 import com.bogdan.vocabulary.dto.DictionaryDto;
+import com.bogdan.vocabulary.dto.PageSettingsDto;
 import com.bogdan.vocabulary.dto.WordDto;
 import com.bogdan.vocabulary.exception.generalException.VocabularyNotFoundException;
 import com.bogdan.vocabulary.model.Dictionary;
+import com.bogdan.vocabulary.model.PageSettings;
 import com.bogdan.vocabulary.model.Word;
 import com.bogdan.vocabulary.repository.WordRepository;
 import com.bogdan.vocabulary.service.dictionary.DictionaryServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +37,18 @@ public class WordServiceImpl implements WordService {
 
     @Override
     @Transactional(readOnly = true)
-    public DictionaryDto getAllWordsByDictionaryId(Long dictionaryId) {
-        return dictionaryService.getDictionary(dictionaryId);
+    public PageSettingsDto<WordDto> getAllWordsByDictionaryId(Long dictionaryId, PageSettings pageSettings) {
+
+        dictionaryService.getDictionary(dictionaryId);
+
+        Sort wordSort = pageSettings.buildSort();
+        Pageable pageRequest = PageRequest.of(pageSettings.getPage(), pageSettings.getElementPerPage(), wordSort);
+        Page<Word> wordsPage = wordRepository.findAllWordsByDictionaryId(dictionaryId, pageRequest);
+
+        return new PageSettingsDto<>(
+                wordsPage.getContent().stream().map(wordConverter::convertToDto).toList(),
+                wordsPage.getTotalElements()
+        );
     }
 
     @Override

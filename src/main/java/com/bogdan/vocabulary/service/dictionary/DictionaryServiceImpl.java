@@ -1,19 +1,26 @@
 package com.bogdan.vocabulary.service.dictionary;
 
+import com.bogdan.vocabulary.converter.PageConverter;
 import com.bogdan.vocabulary.dto.DictionaryDto;
 import com.bogdan.vocabulary.dto.LanguageDto;
+import com.bogdan.vocabulary.dto.PageSettingsDto;
 import com.bogdan.vocabulary.exception.generalException.VocabularyBusinessException;
 import com.bogdan.vocabulary.exception.generalException.VocabularyNotFoundException;
 import com.bogdan.vocabulary.converter.DictionaryConverter;
 import com.bogdan.vocabulary.model.Dictionary;
+import com.bogdan.vocabulary.model.PageSettings;
 import com.bogdan.vocabulary.repository.DictionaryRepository;
 import com.bogdan.vocabulary.service.language.LanguageServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -26,6 +33,8 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     private final DictionaryConverter dictionaryConverter;
 
+    private final PageConverter<Dictionary> pageConverter;
+
     private static final String DICTIONARY_NOT_FOUND = "Dictionary with 'id = %d' not found.";
 
     @Override
@@ -35,6 +44,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
         Dictionary dictionary = dictionaryConverter.convertToEntity(dictionaryDto);
         dictionary.setWords(new ArrayList<>());
+        dictionary.setCreatedAt(LocalDateTime.now());
         Dictionary savedDictionary = dictionaryRepository.save(dictionary);
 
         return dictionaryConverter.convertToDto(savedDictionary);
@@ -42,11 +52,16 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DictionaryDto> getAllDictionaries() {
-        List<Dictionary> dictionaries = dictionaryRepository.findAll();
-        return dictionaries.isEmpty()
-                ? new ArrayList<>()
-                : dictionaries.stream().map(dictionaryConverter::convertToDto).collect(Collectors.toList());
+    public PageSettingsDto<DictionaryDto> getAllDictionaries(PageSettings pageSettings) {
+
+        Sort dictionarySort = pageSettings.buildSort();
+        Pageable pageRequest = PageRequest.of(pageSettings.getPage(), pageSettings.getElementPerPage(), dictionarySort);
+        Page<Dictionary> dictionaryPage = dictionaryRepository.findAll(pageRequest);
+
+        return new PageSettingsDto<>(
+                dictionaryPage.getContent().stream().map(dictionaryConverter::convertToDto).toList(),
+                dictionaryPage.getTotalElements()
+        );
     }
 
     @Override

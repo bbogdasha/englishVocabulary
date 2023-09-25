@@ -1,6 +1,8 @@
 package com.bogdan.vocabulary.repository;
 
 import com.bogdan.vocabulary.model.Word;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +16,10 @@ public interface WordRepository extends JpaRepository<Word, Long> {
     @Query(value = "select w.* from words w left join dictionaries d on w.dictionary_id = d.dictionary_id " +
             "where d.dictionary_id = :dictionaryId and w.word_id = :wordId", nativeQuery = true)
     Optional<Word> findWordByDictionaryIdAndWordId(Long dictionaryId, Long wordId);
+
+    @Query(value = "select w.* from words w left join dictionaries d on w.dictionary_id = d.dictionary_id " +
+            "where d.dictionary_id = :dictionaryId", nativeQuery = true)
+    Page<Word> findAllWordsByDictionaryId(Long dictionaryId, Pageable wordPage);
 
     @Modifying
     @Query(value = "delete from words where word_id = :wordId", nativeQuery = true)

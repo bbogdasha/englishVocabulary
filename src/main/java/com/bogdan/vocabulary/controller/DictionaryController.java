@@ -1,17 +1,18 @@
 package com.bogdan.vocabulary.controller;
 
 import com.bogdan.vocabulary.dto.DictionaryDto;
+import com.bogdan.vocabulary.dto.PageSettingsDto;
 import com.bogdan.vocabulary.dto.View;
+import com.bogdan.vocabulary.model.PageSettings;
 import com.bogdan.vocabulary.service.dictionary.DictionaryServiceImpl;
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
-import java.util.List;
 import java.util.Map;
 
 @Validated
@@ -34,9 +35,10 @@ public class DictionaryController {
 
     @GetMapping
     @JsonView(value = View.SummaryDictionary.class)
-    public ResponseEntity<List<DictionaryDto>> getAllDictionaries() {
-        List<DictionaryDto> dictionariesDto = dictionaryService.getAllDictionaries();
-        return !dictionariesDto.isEmpty()
+    public ResponseEntity<PageSettingsDto<DictionaryDto>> getAllDictionaries(@Valid PageSettings pageSettings) {
+        PageSettingsDto<DictionaryDto> dictionariesDto = dictionaryService.getAllDictionaries(pageSettings);
+
+        return !dictionariesDto.getContent().isEmpty()
                 ? new ResponseEntity<>(dictionariesDto, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

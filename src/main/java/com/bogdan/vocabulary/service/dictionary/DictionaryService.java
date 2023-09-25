@@ -1,13 +1,14 @@
 package com.bogdan.vocabulary.service.dictionary;
 
 import com.bogdan.vocabulary.dto.DictionaryDto;
+import com.bogdan.vocabulary.dto.PageSettingsDto;
+import com.bogdan.vocabulary.model.PageSettings;
 
-import java.util.List;
 import java.util.Map;
 
 public interface DictionaryService {
 
-    List<DictionaryDto> getAllDictionaries();
+    PageSettingsDto<DictionaryDto> getAllDictionaries(PageSettings pageSettings);
 
     DictionaryDto getDictionary(Long id);
 

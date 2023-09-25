@@ -43,6 +43,9 @@
             <column name="dictionary_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_at" type="TIMESTAMPTZ">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 
