@@ -1,0 +1,52 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="bogdan" id="vocabulary-4.0">
+        <sql>
+            INSERT INTO words (word, translation, example, dictionary_id) VALUES
+                ('Effect', 'Ефект', 'The medicine had a soothing effect on her headache.', 1),
+                ('Affect', 'Впливати', 'The sudden news seemed to affect her deeply.', 1),
+                ('Impact', 'Вплив', 'The new policy had a significant impact on the company''s profits.', 1),
+                ('Behold', 'Дивитис', 'Behold the beautiful sunset over the ocean.', 1),
+                ('Adorable', 'Прекрасний ', 'The little puppy was absolutely adorable.', 1),
+                ('Cursed', 'Проклятий', '', 1),
+                ('Annoying', 'Надокучливий', '', 1),
+                ('Annoyed', 'Роздратований', '', 1),
+                ('Occurred', 'Трапилось', 'The accident occurred on the highway last night.', 1),
+                ('Quite', 'Досить', 'The movie was quite interesting, and i enjoyed it.', 1),
+                ('Quiet', 'Тихий', 'The library is usually a quiet place to study.', 1),
+                ('Fair', 'Справедливий', 'The judge made a fair decision in the court case.', 1),
+                ('Unfair', 'Несправедливий', '', 1),
+                ('On my own', 'Самостійно', 'She decided to travel on her own and explore new places', 1),
+                ('Appear', 'З''явитися', 'The magician made a rabbit appear out of a hat.', 1),
+                ('Shack', 'Халупа ', 'They lived in a small shack by the river.', 1),
+                ('Fancy', 'Модний', 'She wore a fancy dress to the party.', 1),
+                ('Admit', 'Визнати', 'He had to admit that he was wrong.', 1),
+                ('Crowd', 'Толпа', '', 1),
+                ('Despite', 'Незважаючи на', '', 1),
+                ('Participate', 'Брати участь', '', 1),
+                ('Explore', 'Досліджувати', 'They decided to explore new markets for their products', 1),
+                ('handy', 'Зручний', '', 1),
+                ('Chewing', 'Жування', 'She was chewing gum while talking to him.', 1),
+                ('Bequemer', 'Зручний', 'Some germany text', 3),
+                ('Zu akzeptieren', 'Визнати', '', 3),
+                ('Stiller', 'Тихий', '', 3),
+                ('Ciżba', 'Толпа', 'Ciżba podburzonych fanatyków religijnych natarła na uczestników kongresu.', 4),
+                ('wyrko', 'Ліжко', '', 4),
+                ('samolot', 'Літак', '', 4),
+                ('Obtain', 'Отримувати', 'She obtained a scholarship to study abroad', 5),
+                ('Awareness', 'Усвідомлення', '', 5),
+                ('Below', 'Нижче', 'The temperature dropped below freezing last night.', 5),
+                ('Look after', 'Піклуватися про', '', 5),
+                ('Look for', 'Шукати', '', 5),
+                ('Grano', 'Пшениця', 'Le principali colture prodotte sono mais, girasole, grano, miglio, lupino', 6),
+                ('Mare', 'Море', 'I prigionieri furono messi su una nave e portati in mare aperto.', 6),
+                ('Mostro', 'Чудовисько', '', 6);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

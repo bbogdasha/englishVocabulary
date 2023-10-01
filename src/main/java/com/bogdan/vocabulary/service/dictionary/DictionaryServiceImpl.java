@@ -1,6 +1,5 @@
 package com.bogdan.vocabulary.service.dictionary;
 
-import com.bogdan.vocabulary.converter.PageConverter;
 import com.bogdan.vocabulary.dto.DictionaryDto;
 import com.bogdan.vocabulary.dto.LanguageDto;
 import com.bogdan.vocabulary.dto.PageSettingsDto;
@@ -32,8 +31,6 @@ public class DictionaryServiceImpl implements DictionaryService {
     private final LanguageServiceImpl languageService;
 
     private final DictionaryConverter dictionaryConverter;
-
-    private final PageConverter<Dictionary> pageConverter;
 
     private static final String DICTIONARY_NOT_FOUND = "Dictionary with 'id = %d' not found.";
 

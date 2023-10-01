@@ -1,11 +1,8 @@
 package com.bogdan.vocabulary.service.word;
 
-import com.bogdan.vocabulary.dto.DictionaryDto;
 import com.bogdan.vocabulary.dto.PageSettingsDto;
 import com.bogdan.vocabulary.dto.WordDto;
-import com.bogdan.vocabulary.model.Dictionary;
 import com.bogdan.vocabulary.model.PageSettings;
-import com.bogdan.vocabulary.model.Word;
 
 import java.util.List;
 import java.util.Map;

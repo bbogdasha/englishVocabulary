@@ -9,10 +9,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class DictionaryDto {
 
     @JsonView(View.SummaryDictionary.class)

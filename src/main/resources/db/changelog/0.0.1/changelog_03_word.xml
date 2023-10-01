@@ -23,7 +23,7 @@
             <column name="example" type="VARCHAR(255)">
                 <constraints nullable="true"/>
             </column>
-            <column name="created_at" type="TIMESTAMPTZ">
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueDate="NOW()">
                 <constraints nullable="false"/>
             </column>
             <column name="dictionary_id" type="BIGINT">

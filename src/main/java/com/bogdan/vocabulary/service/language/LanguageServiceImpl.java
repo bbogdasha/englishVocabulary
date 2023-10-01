@@ -24,6 +24,7 @@ public class LanguageServiceImpl implements LanguageService {
     private final LanguageConverter languageConverter;
 
     @Override
+    @Transactional(readOnly = true)
     public List<LanguageDto> getAllLanguages() {
         List<Language> languages = languageRepository.findAll();
         return languages.isEmpty()
@@ -32,6 +33,7 @@ public class LanguageServiceImpl implements LanguageService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public LanguageDto getLanguage(UUID id) {
         Language language = languageRepository.findByLanguageId(id);
 
