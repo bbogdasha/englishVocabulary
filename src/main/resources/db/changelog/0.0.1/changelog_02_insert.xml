@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <changeSet author="bogdan" id="vocabulary-2.0">
+    <changeSet author="bogdan" id="vocabulary-api-2.0">
         <sql>
             INSERT INTO languages (language_name) VALUES
                 ( 'English' ),
@@ -21,9 +21,9 @@
         </sql>
     </changeSet>
 
-    <changeSet author="bogdan" id="vocabulary-2.1">
+    <changeSet author="bogdan" id="vocabulary-api-2.1">
         <sql>
-            INSERT INTO dictionaries (native_language_id, learn_language_id, dictionary_name) VALUES
+            INSERT INTO vocabularies (native_language_id, learn_language_id, vocabulary_name) VALUES
             ((select language_id from languages where language_name = 'Ukraine'), (select language_id from languages where language_name = 'English'), 'My English'),
             ((select language_id from languages where language_name = 'Ukraine'), (select language_id from languages where language_name = 'English'), 'Turbo English'),
             ((select language_id from languages where language_name = 'Ukraine'), (select language_id from languages where language_name = 'German'), 'For my little Führer'),

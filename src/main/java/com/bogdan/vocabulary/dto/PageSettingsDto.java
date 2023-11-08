@@ -12,10 +12,10 @@ import java.util.List;
 @NoArgsConstructor
 public class PageSettingsDto<T> {
 
-    @JsonView(View.SummaryDictionary.class)
+    @JsonView(View.SummaryVocabulary.class)
     private List<T> content;
 
-    @JsonView(View.SummaryDictionary.class)
+    @JsonView(View.SummaryVocabulary.class)
     private Long totalElements;
 
     public PageSettingsDto(Page<T> page) {

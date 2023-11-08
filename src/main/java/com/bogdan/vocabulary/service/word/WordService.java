@@ -9,13 +9,13 @@ import java.util.Map;
 
 public interface WordService {
 
-    PageSettingsDto<WordDto> getAllWordsByDictionaryId(Long dictionaryId, PageSettings pageSettings);
+    PageSettingsDto<WordDto> getAllWordsByVocabularyId(Long vocabularyId, PageSettings pageSettings);
 
-    WordDto getWordById(Long dictionaryId, Long wordId);
+    WordDto getWordById(Long vocabularyId, Long wordId);
 
-    List<WordDto> createWords(Long dictionaryId, List<WordDto> wordsDto);
+    List<WordDto> createWords(Long vocabularyId, List<WordDto> wordsDto);
 
-    WordDto patchWord(Long dictionaryId, Long wordId, Map<String, Object> changes);
+    WordDto patchWord(Long vocabularyId, Long wordId, Map<String, Object> changes);
 
-    void deleteWord(Long dictionaryId, Long wordId);
+    void deleteWord(Long vocabularyId, Long wordId);
 }

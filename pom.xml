@@ -10,7 +10,7 @@
 	</parent>
 
 	<groupId>com.bogdan</groupId>
-	<artifactId>vocabulary</artifactId>
+	<artifactId>vocabulary-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>vocabulary</name>
 	<description>English Vocabulary project</description>

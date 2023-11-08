@@ -16,30 +16,30 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "dictionaries")
-public class Dictionary {
+@Table(name = "vocabularies")
+public class Vocabulary {
 
     @Id
     @SequenceGenerator(
-            name = "dictionary_id_sequence",
-            sequenceName = "dictionary_id_sequence",
+            name = "vocabulary_id_sequence",
+            sequenceName = "vocabulary_id_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "dictionary_id_sequence"
+            generator = "vocabulary_id_sequence"
     )
-    private Integer dictionaryId;
+    private Integer vocabularyId;
 
     private UUID nativeLanguageId;
 
     private UUID learnLanguageId;
 
-    private String dictionaryName;
+    private String vocabularyName;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "dictionary", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Word> words;
 }

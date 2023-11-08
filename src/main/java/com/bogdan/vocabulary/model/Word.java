@@ -37,8 +37,8 @@ public class Word {
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dictionary_id")
+    @JoinColumn(name = "vocabulary_id")
     @JsonIgnore
-    private Dictionary dictionary;
+    private Vocabulary vocabulary;
 
 }

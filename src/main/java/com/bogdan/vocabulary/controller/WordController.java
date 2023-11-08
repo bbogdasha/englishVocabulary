@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Validated
 @RestController
-@RequestMapping("/api/dictionaries/{dictionaryId}")
+@RequestMapping("/api/v1/vocabularies/{vocabularyId}")
 public class WordController {
 
     private final WordServiceImpl wordService;
@@ -27,15 +27,15 @@ public class WordController {
     }
 
     @PostMapping("/words")
-    public ResponseEntity<List<WordDto>> createWords(@PathVariable Long dictionaryId,
+    public ResponseEntity<List<WordDto>> createWords(@PathVariable Long vocabularyId,
                                                      @Valid @RequestBody List<WordDto> wordsDto) {
-        List<WordDto> createdWords = wordService.createWords(dictionaryId, wordsDto);
+        List<WordDto> createdWords = wordService.createWords(vocabularyId, wordsDto);
         return new ResponseEntity<>(createdWords, HttpStatus.CREATED);
     }
 
     @GetMapping("/words")
-    public ResponseEntity<PageSettingsDto<WordDto>> getAllDictionaryWords(@PathVariable Long dictionaryId, PageSettings pageSettings) {
-        PageSettingsDto<WordDto> wordsDto = wordService.getAllWordsByDictionaryId(dictionaryId, pageSettings);
+    public ResponseEntity<PageSettingsDto<WordDto>> getAllVocabularyWords(@PathVariable Long vocabularyId, PageSettings pageSettings) {
+        PageSettingsDto<WordDto> wordsDto = wordService.getAllWordsByVocabularyId(vocabularyId, pageSettings);
 
         return !wordsDto.getContent().isEmpty()
                 ? new ResponseEntity<>(wordsDto, HttpStatus.OK)
@@ -43,15 +43,15 @@ public class WordController {
     }
 
     @PatchMapping("/words/{wordId}")
-    public ResponseEntity<WordDto> patchWord(@PathVariable Long dictionaryId, @PathVariable Long wordId,
+    public ResponseEntity<WordDto> patchWord(@PathVariable Long vocabularyId, @PathVariable Long wordId,
                                                          @RequestBody Map<String, Object> changes) {
-        WordDto wordDto = wordService.patchWord(dictionaryId, wordId, changes);
+        WordDto wordDto = wordService.patchWord(vocabularyId, wordId, changes);
         return new ResponseEntity<>(wordDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/words/{wordId}")
-    public ResponseEntity<String> deleteWord(@PathVariable Long dictionaryId, @PathVariable Long wordId) {
-        wordService.deleteWord(dictionaryId, wordId);
+    public ResponseEntity<String> deleteWord(@PathVariable Long vocabularyId, @PathVariable Long wordId) {
+        wordService.deleteWord(vocabularyId, wordId);
         return new ResponseEntity<>("Word successfully deleted!", HttpStatus.OK);
     }
 }

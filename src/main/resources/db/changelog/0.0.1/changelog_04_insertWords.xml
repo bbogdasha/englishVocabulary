@@ -5,9 +5,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <changeSet author="bogdan" id="vocabulary-4.0">
+    <changeSet author="bogdan" id="vocabulary-api-4.0">
         <sql>
-            INSERT INTO words (word, translation, example, dictionary_id) VALUES
+            INSERT INTO words (word, translation, example, vocabulary_id) VALUES
                 ('Effect', 'Ефект', 'The medicine had a soothing effect on her headache.', 1),
                 ('Affect', 'Впливати', 'The sudden news seemed to affect her deeply.', 1),
                 ('Impact', 'Вплив', 'The new policy had a significant impact on the company''s profits.', 1),

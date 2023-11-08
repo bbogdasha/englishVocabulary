@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/languages")
+@RequestMapping("/api/v1/languages")
 public class LanguageController {
 
     private final LanguageServiceImpl languageService;

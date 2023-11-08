@@ -1,16 +1,16 @@
 package com.bogdan.vocabulary.service.word;
 
-import com.bogdan.vocabulary.converter.DictionaryConverter;
+import com.bogdan.vocabulary.converter.VocabularyConverter;
 import com.bogdan.vocabulary.converter.WordConverter;
-import com.bogdan.vocabulary.dto.DictionaryDto;
+import com.bogdan.vocabulary.dto.VocabularyDto;
 import com.bogdan.vocabulary.dto.PageSettingsDto;
 import com.bogdan.vocabulary.dto.WordDto;
 import com.bogdan.vocabulary.exception.generalException.VocabularyNotFoundException;
-import com.bogdan.vocabulary.model.Dictionary;
+import com.bogdan.vocabulary.model.Vocabulary;
 import com.bogdan.vocabulary.model.PageSettings;
 import com.bogdan.vocabulary.model.Word;
 import com.bogdan.vocabulary.repository.WordRepository;
-import com.bogdan.vocabulary.service.dictionary.DictionaryServiceImpl;
+import com.bogdan.vocabulary.service.vocabulary.VocabularyServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -29,21 +29,21 @@ public class WordServiceImpl implements WordService {
 
     private final WordConverter wordConverter;
 
-    private final DictionaryConverter dictionaryConverter;
+    private final VocabularyConverter vocabularyConverter;
 
-    private final DictionaryServiceImpl dictionaryService;
+    private final VocabularyServiceImpl vocabularyService;
 
     private static final String WORD_NOT_FOUND = "Word with 'id = %d' not found.";
 
     @Override
     @Transactional(readOnly = true)
-    public PageSettingsDto<WordDto> getAllWordsByDictionaryId(Long dictionaryId, PageSettings pageSettings) {
+    public PageSettingsDto<WordDto> getAllWordsByVocabularyId(Long vocabularyId, PageSettings pageSettings) {
 
-        dictionaryService.getDictionary(dictionaryId);
+        vocabularyService.getVocabulary(vocabularyId);
 
         Sort wordSort = pageSettings.buildSort();
         Pageable pageRequest = PageRequest.of(pageSettings.getPage(), pageSettings.getElementPerPage(), wordSort);
-        Page<Word> wordsPage = wordRepository.findAllWordsByDictionaryId(dictionaryId, pageRequest);
+        Page<Word> wordsPage = wordRepository.findAllWordsByVocabularyId(vocabularyId, pageRequest);
 
         return new PageSettingsDto<>(
                 wordsPage.getContent().stream().map(wordConverter::convertToDto).toList(),
@@ -53,10 +53,10 @@ public class WordServiceImpl implements WordService {
 
     @Override
     @Transactional(readOnly = true)
-    public WordDto getWordById(Long dictionaryId, Long wordId) {
-        dictionaryService.getDictionary(dictionaryId);
+    public WordDto getWordById(Long vocabularyId, Long wordId) {
+        vocabularyService.getVocabulary(vocabularyId);
 
-        Optional<Word> optionalWord = wordRepository.findWordByDictionaryIdAndWordId(dictionaryId, wordId);
+        Optional<Word> optionalWord = wordRepository.findWordByVocabularyIdAndWordId(vocabularyId, wordId);
 
         if (optionalWord.isEmpty()) {
             throw new VocabularyNotFoundException(String.format(WORD_NOT_FOUND, wordId));
@@ -67,9 +67,9 @@ public class WordServiceImpl implements WordService {
 
     @Override
     @Transactional
-    public List<WordDto> createWords(Long dictionaryId, List<WordDto> wordsDto) {
-        DictionaryDto dictionaryDto = dictionaryService.getDictionary(dictionaryId);
-        Dictionary dictionary = dictionaryConverter.convertToEntity(dictionaryDto);
+    public List<WordDto> createWords(Long vocabularyId, List<WordDto> wordsDto) {
+        VocabularyDto vocabularyDto = vocabularyService.getVocabulary(vocabularyId);
+        Vocabulary vocabulary = vocabularyConverter.convertToEntity(vocabularyDto);
 
         List<Word> listSavedWords = new ArrayList<>();
 
@@ -78,11 +78,11 @@ public class WordServiceImpl implements WordService {
                 refactoringWord(wordDto);
                 Word word = wordConverter.convertToEntity(wordDto);
                 word.setCreatedAt(LocalDateTime.now());
-                word.setDictionary(dictionary);
+                word.setVocabulary(vocabulary);
                 listSavedWords.add(word);
             }
 
-            dictionary.getWords().addAll(listSavedWords);
+            vocabulary.getWords().addAll(listSavedWords);
             wordRepository.saveAll(listSavedWords);
         }
 
@@ -93,8 +93,8 @@ public class WordServiceImpl implements WordService {
 
     @Override
     @Transactional
-    public WordDto patchWord(Long dictionaryId, Long wordId, Map<String, Object> changes) {
-        WordDto wordDto = getWordById(dictionaryId, wordId);
+    public WordDto patchWord(Long vocabularyId, Long wordId, Map<String, Object> changes) {
+        WordDto wordDto = getWordById(vocabularyId, wordId);
 
         refactoringWord(wordDto);
 
@@ -115,17 +115,17 @@ public class WordServiceImpl implements WordService {
 
     @Override
     @Transactional
-    public void deleteWord(Long dictionaryId, Long wordId) {
-        DictionaryDto dictionaryDto = dictionaryService.getDictionary(dictionaryId);
-        Dictionary dictionary = dictionaryConverter.convertToEntity(dictionaryDto);
+    public void deleteWord(Long vocabularyId, Long wordId) {
+        VocabularyDto vocabularyDto = vocabularyService.getVocabulary(vocabularyId);
+        Vocabulary vocabulary = vocabularyConverter.convertToEntity(vocabularyDto);
 
-        Optional<Word> optionalWord = wordRepository.findWordByDictionaryIdAndWordId(dictionaryId, wordId);
+        Optional<Word> optionalWord = wordRepository.findWordByVocabularyIdAndWordId(vocabularyId, wordId);
 
         if (optionalWord.isEmpty()) {
             throw new VocabularyNotFoundException(String.format(WORD_NOT_FOUND, wordId));
         }
 
-        dictionary.getWords().remove(optionalWord.get());
+        vocabulary.getWords().remove(optionalWord.get());
         wordRepository.delete(wordId);
     }
 

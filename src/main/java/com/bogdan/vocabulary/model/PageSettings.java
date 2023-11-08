@@ -14,7 +14,7 @@ public class PageSettings {
 
     private String direction = "asc";
 
-    private String key = "createdAt";
+    private String key = "created_at";
 
     public Sort buildSort() {
         direction = direction.toLowerCase(Locale.ROOT);

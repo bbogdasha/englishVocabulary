@@ -13,13 +13,13 @@ import java.util.Optional;
 @Repository
 public interface WordRepository extends JpaRepository<Word, Long> {
 
-    @Query(value = "select w.* from words w left join dictionaries d on w.dictionary_id = d.dictionary_id " +
-            "where d.dictionary_id = :dictionaryId and w.word_id = :wordId", nativeQuery = true)
-    Optional<Word> findWordByDictionaryIdAndWordId(Long dictionaryId, Long wordId);
+    @Query(value = "select w.* from words w left join vocabularies v on w.vocabulary_id = v.vocabulary_id " +
+            "where v.vocabulary_id = :vocabularyId and w.word_id = :wordId", nativeQuery = true)
+    Optional<Word> findWordByVocabularyIdAndWordId(Long vocabularyId, Long wordId);
 
-    @Query(value = "select w.* from words w left join dictionaries d on w.dictionary_id = d.dictionary_id " +
-            "where d.dictionary_id = :dictionaryId", nativeQuery = true)
-    Page<Word> findAllWordsByDictionaryId(Long dictionaryId, Pageable wordPage);
+    @Query(value = "select w.* from words w left join vocabularies v on w.vocabulary_id = v.vocabulary_id " +
+            "where v.vocabulary_id = :vocabularyId", nativeQuery = true)
+    Page<Word> findAllWordsByVocabularyId(Long vocabularyId, Pageable wordPage);
 
     @Modifying
     @Query(value = "delete from words where word_id = :wordId", nativeQuery = true)

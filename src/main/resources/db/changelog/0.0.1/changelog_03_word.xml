@@ -5,11 +5,11 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <changeSet author="bogdan" id="vocabulary-3.0">
+    <changeSet author="bogdan" id="vocabulary-api-3.0">
         <createSequence sequenceName="word_id_sequence" dataType="bigint" incrementBy="1" maxValue="10000" minValue="1" startValue="1"/>
     </changeSet>
 
-    <changeSet author="bogdan" id="vocabulary-3.1">
+    <changeSet author="bogdan" id="vocabulary-api-3.1">
         <createTable tableName="words">
             <column name="word_id" type="INTEGER" defaultValueComputed="nextval('word_id_sequence')">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="word_pk"/>
@@ -26,18 +26,18 @@
             <column name="created_at" type="TIMESTAMPTZ" defaultValueDate="NOW()">
                 <constraints nullable="false"/>
             </column>
-            <column name="dictionary_id" type="BIGINT">
+            <column name="vocabulary_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
-    <changeSet author="bogdan" id="vocabulary-3.2">
-        <addForeignKeyConstraint baseColumnNames="dictionary_id"
+    <changeSet author="bogdan" id="vocabulary-api-3.2">
+        <addForeignKeyConstraint baseColumnNames="vocabulary_id"
                                  baseTableName="words"
-                                 constraintName="fk_dictionary_id"
-                                 referencedColumnNames="dictionary_id"
-                                 referencedTableName="dictionaries"
+                                 constraintName="fk_vocabulary_id"
+                                 referencedColumnNames="vocabulary_id"
+                                 referencedTableName="vocabularies"
                                  validate="true"/>
     </changeSet>
 

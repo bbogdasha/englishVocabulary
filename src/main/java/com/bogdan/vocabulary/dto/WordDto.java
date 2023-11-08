@@ -1,6 +1,6 @@
 package com.bogdan.vocabulary.dto;
 
-import com.bogdan.vocabulary.model.Dictionary;
+import com.bogdan.vocabulary.model.Vocabulary;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -35,5 +35,5 @@ public class WordDto {
     private LocalDateTime createdAt;
 
     @JsonIgnore
-    private Dictionary dictionary;
+    private Vocabulary vocabulary;
 }

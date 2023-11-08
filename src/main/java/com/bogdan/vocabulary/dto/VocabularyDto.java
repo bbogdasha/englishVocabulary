@@ -13,30 +13,30 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DictionaryDto {
+public class VocabularyDto {
 
-    @JsonView(View.SummaryDictionary.class)
-    private Integer dictionaryId;
+    @JsonView(View.SummaryVocabulary.class)
+    private Integer vocabularyId;
 
-    @JsonView(View.SummaryDictionary.class)
+    @JsonView(View.SummaryVocabulary.class)
     @NotBlank(message = "Native language id cannot be empty.")
     @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
             message = "Invalid 'UUID' format.")
     private String nativeLanguageId;
 
-    @JsonView(View.SummaryDictionary.class)
+    @JsonView(View.SummaryVocabulary.class)
     @NotBlank(message = "Learn language id cannot be empty.")
     @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
             message = "Invalid 'UUID' format.")
     private String learnLanguageId;
 
-    @JsonView(View.SummaryDictionary.class)
-    @NotBlank(message = "Dictionary name cannot be empty.")
+    @JsonView(View.SummaryVocabulary.class)
+    @NotBlank(message = "Vocabulary name cannot be empty.")
     @Pattern(regexp = "^[a-zA-Z0-9]+('[a-zA-Z0-9])?[a-zA-Z0-9]{0,36}",
             message = "Invalid 'name' format.")
-    private String dictionaryName;
+    private String vocabularyName;
 
-    @JsonView(View.SummaryDictionary.class)
+    @JsonView(View.SummaryVocabulary.class)
     private LocalDateTime createdAt;
 
     private List<Word> words;
