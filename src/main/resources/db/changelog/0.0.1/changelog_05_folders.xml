@@ -1,0 +1,113 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="bogdan" id="vocabulary-api-5.0">
+        <createSequence sequenceName="folder_id_sequence" dataType="bigint" incrementBy="1" maxValue="10000" minValue="1" startValue="1"/>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.1">
+        <createTable tableName="folders">
+            <column name="folder_id" type="INTEGER" defaultValueComputed="nextval('folder_id_sequence')">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="folder_pk"/>
+            </column>
+            <column name="folder_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueDate="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="vocabulary_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.2">
+        <addForeignKeyConstraint baseColumnNames="vocabulary_id"
+                                 baseTableName="folders"
+                                 constraintName="fk_vocabulary_folder_id"
+                                 referencedColumnNames="vocabulary_id"
+                                 referencedTableName="vocabularies"
+                                 validate="true"/>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.3">
+        <sql>
+            CREATE TABLE temp_words AS
+            TABLE words;
+        </sql>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.4">
+        <delete catalogName="public"
+                tableName="words">
+        </delete>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.5">
+        <dropUniqueConstraint constraintName="fk_vocabulary_id"
+                              schemaName="public"
+                              tableName="words" />
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.6">
+        <renameColumn columnDataType="BIGINT"
+                      newColumnName="folder_id"
+                      oldColumnName="vocabulary_id"
+                      schemaName="public"
+                      tableName="words"/>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.7">
+        <addForeignKeyConstraint baseColumnNames="folder_id"
+                                 baseTableName="words"
+                                 constraintName="fk_folder_word_id"
+                                 referencedColumnNames="folder_id"
+                                 referencedTableName="folders"
+                                 validate="true"/>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.8">
+        <sql>
+            INSERT INTO folders (folder_name, description, vocabulary_id)
+            SELECT 'New folder 1', NULL, (SELECT DISTINCT vocabulary_id FROM temp_words LIMIT 1 OFFSET (a.n - 1))
+            FROM generate_series(1, (SELECT count(DISTINCT vocabulary_id) FROM temp_words)) AS a(n)
+        </sql>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.9">
+        <sql>
+            UPDATE temp_words tw
+            SET vocabulary_id = f.folder_id
+            FROM folders f
+            WHERE f.vocabulary_id = tw.vocabulary_id
+        </sql>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.10">
+        <sql>
+            INSERT INTO words (word_id, word, translation, example, created_at, folder_id)
+            SELECT tw.word_id, tw.word, tw.translation, tw.example, tw.created_at, tw.vocabulary_id
+            FROM temp_words AS tw ORDER BY word_id
+        </sql>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.11">
+        <sql>
+            SELECT setval('word_id_sequence', (select max(word_id) from words));
+        </sql>
+    </changeSet>
+
+    <changeSet author="bogdan" id="vocabulary-api-5.12">
+        <dropTable schemaName="public"
+                   tableName="temp_words"/>
+    </changeSet>
+
+</databaseChangeLog>

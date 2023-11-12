@@ -3,19 +3,22 @@ package com.bogdan.vocabulary.service.word;
 import com.bogdan.vocabulary.dto.PageSettingsDto;
 import com.bogdan.vocabulary.dto.WordDto;
 import com.bogdan.vocabulary.model.PageSettings;
+import com.bogdan.vocabulary.model.WordFilter;
+import com.bogdan.vocabulary.model.WordUpdateRequest;
 
 import java.util.List;
 import java.util.Map;
 
 public interface WordService {
 
-    PageSettingsDto<WordDto> getAllWordsByVocabularyId(Long vocabularyId, PageSettings pageSettings);
+    PageSettingsDto<WordDto> getAllWordsByVocabularyAndFolder(Long vocabularyId, Long folderId,
+                                                              PageSettings pageSettings, WordFilter filter);
 
-    WordDto getWordById(Long vocabularyId, Long wordId);
+    WordDto getWordByVocabularyAndFolder(Long vocabularyId, Long folderId, Long wordId);
 
-    List<WordDto> createWords(Long vocabularyId, List<WordDto> wordsDto);
+    List<WordDto> createWordsInFolder(Long vocabularyId, Long folderId, List<WordDto> wordsDto);
 
-    WordDto patchWord(Long vocabularyId, Long wordId, Map<String, Object> changes);
+    WordDto patchWordByVocabularyAndFolder(Long vocabularyId, Long folderId, Long wordId, WordUpdateRequest request);
 
-    void deleteWord(Long vocabularyId, Long wordId);
+    void deleteWordInFolder(Long vocabularyId, Long folderId, Long wordId);
 }

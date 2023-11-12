@@ -6,8 +6,10 @@ import com.bogdan.vocabulary.dto.PageSettingsDto;
 import com.bogdan.vocabulary.exception.generalException.VocabularyBusinessException;
 import com.bogdan.vocabulary.exception.generalException.VocabularyNotFoundException;
 import com.bogdan.vocabulary.converter.VocabularyConverter;
+import com.bogdan.vocabulary.exception.generalException.VocabularyValidationException;
 import com.bogdan.vocabulary.model.Vocabulary;
 import com.bogdan.vocabulary.model.PageSettings;
+import com.bogdan.vocabulary.model.VocabularyUpdateRequest;
 import com.bogdan.vocabulary.repository.VocabularyRepository;
 import com.bogdan.vocabulary.service.language.LanguageServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +34,7 @@ public class VocabularyServiceImpl implements VocabularyService {
 
     private final VocabularyConverter vocabularyConverter;
 
-    private static final String VOCABULARY_NOT_FOUND = "Vocabulary with 'id = %d' not found.";
+    private static final String VOCABULARY_NOT_FOUND = "Vocabulary [id = %d] not found.";
 
     @Override
     @Transactional
@@ -40,8 +42,9 @@ public class VocabularyServiceImpl implements VocabularyService {
         checkConflict(vocabularyDto);
 
         Vocabulary vocabulary = vocabularyConverter.convertToEntity(vocabularyDto);
-        vocabulary.setWords(new ArrayList<>());
+        vocabulary.setFolders(new ArrayList<>());
         vocabulary.setCreatedAt(LocalDateTime.now());
+        vocabulary.setVocabularyName(vocabulary.getVocabularyName().trim());
         Vocabulary savedVocabulary = vocabularyRepository.save(vocabulary);
 
         return vocabularyConverter.convertToDto(savedVocabulary);
@@ -49,11 +52,11 @@ public class VocabularyServiceImpl implements VocabularyService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageSettingsDto<VocabularyDto> getAllVocabularies(PageSettings pageSettings) {
+    public PageSettingsDto<VocabularyDto> getAllVocabularies(PageSettings pageSettings, String filter) {
 
         Sort vocabularySort = pageSettings.buildSort();
         Pageable pageRequest = PageRequest.of(pageSettings.getPage(), pageSettings.getElementPerPage(), vocabularySort);
-        Page<Vocabulary> vocabularyPage = vocabularyRepository.findAll(pageRequest);
+        Page<Vocabulary> vocabularyPage = vocabularyRepository.findAllVocabularies(pageRequest, filter);
 
         return new PageSettingsDto<>(
                 vocabularyPage.getContent().stream().map(vocabularyConverter::convertToDto).toList(),
@@ -75,32 +78,50 @@ public class VocabularyServiceImpl implements VocabularyService {
 
     @Override
     @Transactional
-    public VocabularyDto patchVocabulary(Long id, Map<String, Object> changes) {
+    public VocabularyDto patchVocabulary(Long id, VocabularyUpdateRequest request) {
         Optional<Vocabulary> optionalVocabulary = vocabularyRepository.findById(id);
 
         if (optionalVocabulary.isEmpty()) {
             throw new VocabularyNotFoundException(String.format(VOCABULARY_NOT_FOUND, id));
         }
 
-        Vocabulary savedVocabulary = optionalVocabulary.get();
+        Vocabulary vocabulary = optionalVocabulary.get();
 
-        if (!savedVocabulary.getWords().isEmpty() &&
-                (changes.containsKey("nativeLanguageId") || changes.containsKey("learnLanguageId"))) {
-            throw new VocabularyBusinessException("You cannot change languages if there are already words in the vocabulary.");
+        if (!vocabulary.getFolders().isEmpty() &&
+                (request.learnLanguageId() != null || request.nativeLanguageId() != null)) {
+            throw new VocabularyBusinessException("You cannot change languages if there are already folders in the vocabulary.");
         }
 
-        changes.forEach((change, value) -> {
-            switch (change) {
-                case "nativeLanguageId" -> savedVocabulary.setNativeLanguageId(UUID.fromString(value.toString()));
-                case "learnLanguageId" -> savedVocabulary.setLearnLanguageId(UUID.fromString(value.toString()));
-                case "vocabularyName" -> savedVocabulary.setVocabularyName(value.toString());
-            }
-        });
+        boolean changes = false;
 
-        VocabularyDto vocabularyDto = vocabularyConverter.convertToDto(savedVocabulary);
+        if (request.nativeLanguageId() != null && !request.nativeLanguageId().equals(vocabulary.getNativeLanguageId())) {
+            vocabulary.setNativeLanguageId(request.nativeLanguageId());
+            changes = true;
+        }
+
+        if (request.learnLanguageId() != null && !request.learnLanguageId().equals(vocabulary.getLearnLanguageId())) {
+            vocabulary.setLearnLanguageId(request.learnLanguageId());
+            changes = true;
+        }
+
+        if (request.vocabularyName() != null && !request.vocabularyName().equals(vocabulary.getVocabularyName())) {
+            vocabulary.setVocabularyName(request.vocabularyName());
+            changes = true;
+        }
+
+        if (request.description() != null && !request.description().equals(vocabulary.getDescription())) {
+            vocabulary.setDescription(request.description());
+            changes = true;
+        }
+
+        if (!changes) {
+            throw new VocabularyValidationException("No data changes found");
+        }
+
+        vocabularyRepository.save(vocabulary);
+
+        VocabularyDto vocabularyDto = vocabularyConverter.convertToDto(vocabulary);
         checkConflict(vocabularyDto);
-
-        vocabularyRepository.save(savedVocabulary);
 
         return vocabularyDto;
     }

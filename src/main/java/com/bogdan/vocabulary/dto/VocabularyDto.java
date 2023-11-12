@@ -1,10 +1,14 @@
 package com.bogdan.vocabulary.dto;
 
-import com.bogdan.vocabulary.model.Word;
+import com.bogdan.vocabulary.model.Folder;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.*;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,12 +36,17 @@ public class VocabularyDto {
 
     @JsonView(View.SummaryVocabulary.class)
     @NotBlank(message = "Vocabulary name cannot be empty.")
-    @Pattern(regexp = "^[a-zA-Z0-9]+('[a-zA-Z0-9])?[a-zA-Z0-9]{0,36}",
+    @Pattern(regexp = "^[a-zA-Z0-9\" \"]+('[a-zA-Z0-9])?[a-zA-Z0-9\" \"]",
             message = "Invalid 'name' format.")
+    @Size(max = 60, message = "Too many characters in 'vocabularyName'. Vocabulary name length: 1-120.")
     private String vocabularyName;
+
+    @JsonView(View.SummaryVocabulary.class)
+    @Size(max = 120, message = "Too many characters in 'description'. Description length: 1-120.")
+    private String description;
 
     @JsonView(View.SummaryVocabulary.class)
     private LocalDateTime createdAt;
 
-    private List<Word> words;
+    private List<Folder> folders;
 }

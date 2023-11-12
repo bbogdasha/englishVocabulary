@@ -1,5 +1,6 @@
 package com.bogdan.vocabulary.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,39 +10,41 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "vocabularies")
-public class Vocabulary {
+@Table(name = "folders")
+public class Folder {
 
     @Id
     @SequenceGenerator(
-            name = "vocabulary_id_sequence",
-            sequenceName = "vocabulary_id_sequence",
+            name = "folder_id_sequence",
+            sequenceName = "folder_id_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "vocabulary_id_sequence"
+            generator = "folder_id_sequence"
     )
-    private Integer vocabularyId;
+    private Integer folderId;
 
-    private UUID nativeLanguageId;
-
-    private UUID learnLanguageId;
-
-    private String vocabularyName;
+    private String folderName;
 
     private String description;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Folder> folders;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vocabulary_id")
+    @JsonIgnore
+    private Vocabulary vocabulary;
+
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Word> words;
+
+
 }

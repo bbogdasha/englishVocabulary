@@ -12,15 +12,15 @@ public class PageSettings {
 
     private int elementPerPage = 10;
 
-    private String direction = "asc";
+    private String sortOrder = "asc";
 
-    private String key = "created_at";
+    private String sortField = "created_at";
 
     public Sort buildSort() {
-        direction = direction.toLowerCase(Locale.ROOT);
-        return switch (direction) {
-            case "dsc" -> Sort.by(key).descending();
-            default -> Sort.by(key).ascending();
+        sortOrder = sortOrder.toLowerCase(Locale.ROOT);
+        return switch (sortOrder) {
+            case "desc" -> Sort.by(sortField).descending();
+            default -> Sort.by(sortField).ascending();
         };
     }
 }

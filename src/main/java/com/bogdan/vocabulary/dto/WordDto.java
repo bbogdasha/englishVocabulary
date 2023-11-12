@@ -1,11 +1,14 @@
 package com.bogdan.vocabulary.dto;
 
-import com.bogdan.vocabulary.model.Vocabulary;
+import com.bogdan.vocabulary.model.Folder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -35,5 +38,5 @@ public class WordDto {
     private LocalDateTime createdAt;
 
     @JsonIgnore
-    private Vocabulary vocabulary;
+    private Folder folder;
 }

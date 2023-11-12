@@ -9,5 +9,7 @@
     <include file="changelog_02_insert.xml" relativeToChangelogFile="true"/>
     <include file="changelog_03_word.xml" relativeToChangelogFile="true"/>
     <include file="changelog_04_insertWords.xml" relativeToChangelogFile="true"/>
+    <include file="changelog_05_folders.xml" relativeToChangelogFile="true"/>
+    <include file="changelog_06_descriptionToVocabulary.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
