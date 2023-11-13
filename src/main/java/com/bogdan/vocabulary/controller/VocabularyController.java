@@ -34,17 +34,12 @@ public class VocabularyController {
 
     @GetMapping
     @JsonView(value = View.SummaryVocabulary.class)
-    public ResponseEntity<PageSettingsDto<VocabularyDto>> getAllVocabularies(@Valid PageSettings pageSettings,
-                                                                             @RequestParam(
-                                                                                     required = false,
-                                                                                     name = "vocabularyName",
-                                                                                     defaultValue = "")
-                                                                             String vocabularyName) {
+    public ResponseEntity<PageSettingsDto<VocabularyDto>> getAllVocabularies(
+            @Valid PageSettings pageSettings, @RequestParam(required = false, name = "vocabularyName",
+            defaultValue = "") String vocabularyName) {
         PageSettingsDto<VocabularyDto> vocabulariesDto = vocabularyService.getAllVocabularies(pageSettings, vocabularyName);
 
-        return !vocabulariesDto.getContent().isEmpty()
-                ? new ResponseEntity<>(vocabulariesDto, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(vocabulariesDto, HttpStatus.OK);
     }
 
     @PatchMapping("/{vocabularyId}")

@@ -17,8 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,7 +36,11 @@ public class WordServiceImpl implements WordService {
 
     private final FolderServiceImpl folderService;
 
-    private static final String WORD_NOT_FOUND = "Word with [id = %d] not found.";
+    private static final String WORD_NOT_FOUND = "Word [id = %d] not found.";
+
+    private static final String SORT_FILTER_NOT_FOUND = "Column [%s] not found.";
+
+    private static final List<String> SORT_COLUMN = Arrays.asList("created_at", "word", "translation");
 
     @Override
     @Transactional(readOnly = true)
@@ -44,13 +48,19 @@ public class WordServiceImpl implements WordService {
                                                                      PageSettings pageSettings, WordFilter filter) {
         folderService.getFolderByVocabulary(vocabularyId, folderId);
 
+        if (!SORT_COLUMN.contains(pageSettings.getSortField())) {
+            throw new VocabularyValidationException(String.format(SORT_FILTER_NOT_FOUND, pageSettings.getSortField()));
+        }
+
         Sort wordSort = pageSettings.buildSort();
         Pageable pageRequest = PageRequest.of(pageSettings.getPage(), pageSettings.getElementPerPage(), wordSort);
         Page<Word> wordsPage = wordRepository.findAllWordsByVocabularyIdAndFolderId(vocabularyId, folderId, pageRequest, filter);
 
         return new PageSettingsDto<>(
                 wordsPage.getContent().stream().map(wordConverter::convertToDto).toList(),
-                wordsPage.getTotalElements()
+                wordsPage.getTotalElements(),
+                wordsPage.getNumber(),
+                wordsPage.getNumberOfElements()
         );
     }
 
@@ -78,13 +88,11 @@ public class WordServiceImpl implements WordService {
             for (WordDto wordDto : wordsDto) {
                 Word word = wordConverter.convertToEntity(wordDto);
                 refactoringWord(word);
-                word.setCreatedAt(LocalDateTime.now());
                 word.setFolder(folder);
+                folder.getWords().add(word);
                 listSavedWords.add(word);
+                wordRepository.save(word);
             }
-
-            folder.getWords().addAll(listSavedWords);
-            wordRepository.saveAll(listSavedWords);
         }
 
         return listSavedWords.isEmpty()

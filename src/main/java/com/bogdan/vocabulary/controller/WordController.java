@@ -14,11 +14,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Validated
 @RestController
-@RequestMapping("/api/v1/vocabularies/{vocabularyId}/folders/{folderId}")
+@RequestMapping("/api/v1/vocabularies/{vocabularyId}/folders/{folderId}/words")
 public class WordController {
 
     private final WordServiceImpl wordService;
@@ -28,15 +27,15 @@ public class WordController {
         this.wordService = wordService;
     }
 
-    @PostMapping("/words")
+    @PostMapping
     public ResponseEntity<List<WordDto>> createWords(@PathVariable Long vocabularyId, @PathVariable Long folderId,
                                                      @Valid @RequestBody List<WordDto> wordsDto) {
         List<WordDto> createdWords = wordService.createWordsInFolder(vocabularyId, folderId, wordsDto);
         return new ResponseEntity<>(createdWords, HttpStatus.CREATED);
     }
 
-    @GetMapping("/words")
-    public ResponseEntity<PageSettingsDto<WordDto>> getAllWordsByVocabularyAndFolder(
+    @GetMapping
+    public ResponseEntity<PageSettingsDto<WordDto>> getAllWords(
             @PathVariable Long vocabularyId, @PathVariable Long folderId, PageSettings pageSettings,
             @RequestParam(name = "word", required = false, defaultValue = "") String filterWord,
             @RequestParam(name = "translation", required = false, defaultValue = "") String filterTranslation) {
@@ -46,19 +45,17 @@ public class WordController {
         PageSettingsDto<WordDto> wordsDto =
                 wordService.getAllWordsByVocabularyAndFolder(vocabularyId, folderId, pageSettings, filter);
 
-        return !wordsDto.getContent().isEmpty()
-                ? new ResponseEntity<>(wordsDto, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(wordsDto, HttpStatus.OK);
     }
 
-    @PatchMapping("/words/{wordId}")
+    @PatchMapping("/{wordId}")
     public ResponseEntity<WordDto> patchWord(@PathVariable Long vocabularyId, @PathVariable Long folderId,
                                              @PathVariable Long wordId, @RequestBody WordUpdateRequest request) {
         WordDto wordDto = wordService.patchWordByVocabularyAndFolder(vocabularyId, folderId, wordId, request);
         return new ResponseEntity<>(wordDto, HttpStatus.OK);
     }
 
-    @DeleteMapping("/words/{wordId}")
+    @DeleteMapping("/{wordId}")
     public ResponseEntity<String> deleteWord(@PathVariable Long vocabularyId, @PathVariable Long folderId,
                                              @PathVariable Long wordId) {
         wordService.deleteWordInFolder(vocabularyId, folderId, wordId);

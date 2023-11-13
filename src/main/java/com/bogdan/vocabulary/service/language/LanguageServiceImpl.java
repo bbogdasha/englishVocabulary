@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,8 @@ public class LanguageServiceImpl implements LanguageService {
     private final LanguageRepository languageRepository;
 
     private final LanguageConverter languageConverter;
+
+    private static final String LANGUAGE_NOT_FOUND = "Language [uuid = %s] not found.";
 
     @Override
     @Transactional(readOnly = true)
@@ -35,12 +38,12 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     @Transactional(readOnly = true)
     public LanguageDto getLanguage(UUID id) {
-        Language language = languageRepository.findByLanguageId(id);
+        Optional<Language> language = languageRepository.findByLanguageId(id);
 
-        if (language == null) {
-            throw new VocabularyNotFoundException("Language with 'uuid = " + id + "' not found.");
+        if (language.isEmpty()) {
+            throw new VocabularyNotFoundException(String.format(LANGUAGE_NOT_FOUND, id));
         }
 
-        return languageConverter.convertToDto(language);
+        return languageConverter.convertToDto(language.get());
     }
 }

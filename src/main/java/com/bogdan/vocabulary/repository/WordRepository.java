@@ -5,16 +5,12 @@ import com.bogdan.vocabulary.model.WordFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
-public interface WordRepository extends JpaRepository<Word, Long>, JpaSpecificationExecutor<Word> {
+public interface WordRepository extends JpaRepository<Word, Long> {
 
     @Query(value = """
             SELECT w.* FROM words w
@@ -26,7 +22,4 @@ public interface WordRepository extends JpaRepository<Word, Long>, JpaSpecificat
     Page<Word> findAllWordsByVocabularyIdAndFolderId(Long vocabularyId, Long folderId, Pageable wordPage,
                                                      @Param("filter") WordFilter filter);
 
-//    @Modifying
-//    @Query(value = "delete from words where word_id = :wordId", nativeQuery = true)
-//    void delete(Long wordId);
 }

@@ -10,7 +10,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FolderRepository extends JpaRepository<Folder, Long> {
 
-    @Query(value = "select f.* from folders f where f.vocabulary_id = :vocabularyId and folder_name ilike %:filter%",
-            nativeQuery = true)
+    @Query(value = """
+            SELECT f.* FROM folders f
+            WHERE f.vocabulary_id = :vocabularyId AND folder_name ILIKE %:filter%
+            """, nativeQuery = true)
     Page<Folder> findAllFoldersByVocabularyId(Long vocabularyId, Pageable wordPage, String filter);
 }

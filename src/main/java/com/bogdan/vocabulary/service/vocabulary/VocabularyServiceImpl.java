@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -43,7 +42,6 @@ public class VocabularyServiceImpl implements VocabularyService {
 
         Vocabulary vocabulary = vocabularyConverter.convertToEntity(vocabularyDto);
         vocabulary.setFolders(new ArrayList<>());
-        vocabulary.setCreatedAt(LocalDateTime.now());
         vocabulary.setVocabularyName(vocabulary.getVocabularyName().trim());
         Vocabulary savedVocabulary = vocabularyRepository.save(vocabulary);
 
@@ -60,7 +58,9 @@ public class VocabularyServiceImpl implements VocabularyService {
 
         return new PageSettingsDto<>(
                 vocabularyPage.getContent().stream().map(vocabularyConverter::convertToDto).toList(),
-                vocabularyPage.getTotalElements()
+                vocabularyPage.getTotalElements(),
+                vocabularyPage.getNumber(),
+                vocabularyPage.getNumberOfElements()
         );
     }
 

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RestController
-@RequestMapping("/api/v1/vocabularies")
+@RequestMapping("/api/v1/vocabularies/{vocabularyId}/folders")
 public class FolderController {
 
     private final FolderServiceImpl folderService;
@@ -24,37 +24,33 @@ public class FolderController {
         this.folderService = folderService;
     }
 
-    @GetMapping("/{vocabularyId}/folders")
+    @GetMapping
     public ResponseEntity<PageSettingsDto<FolderDto>> getAllFolders(
             @PathVariable Long vocabularyId, @Valid PageSettings pageSettings,
-            @RequestParam(required = false, name = "folderName", defaultValue = "")
-            String folderName) {
+            @RequestParam(required = false, name = "folderName", defaultValue = "") String folderName) {
+
         PageSettingsDto<FolderDto> foldersDto =
                 folderService.getAllFoldersByVocabulary(vocabularyId, pageSettings, folderName);
 
-        return !foldersDto.getContent().isEmpty()
-                ? new ResponseEntity<>(foldersDto, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(foldersDto, HttpStatus.OK);
     }
 
-    @PostMapping("/{vocabularyId}/folders")
+    @PostMapping
     public ResponseEntity<FolderDto> createFolder(@PathVariable Long vocabularyId,
                                                   @Valid @RequestBody FolderDto folderDto) {
         FolderDto createdFolder = folderService.createFolderInVocabulary(vocabularyId, folderDto);
         return new ResponseEntity<>(createdFolder, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{vocabularyId}/folders/{folderId}")
-    public ResponseEntity<FolderDto> patchFolder(@PathVariable Long vocabularyId,
-                                                 @PathVariable Long folderId,
+    @PatchMapping("/{folderId}")
+    public ResponseEntity<FolderDto> patchFolder(@PathVariable Long vocabularyId, @PathVariable Long folderId,
                                                  @RequestBody FolderUpdateRequest request) {
         FolderDto patchedFolder = folderService.patchFolderInVocabulary(vocabularyId, folderId, request);
         return new ResponseEntity<>(patchedFolder, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{vocabularyId}/folders/{folderId}")
-    public ResponseEntity<String> deleteFolder(@PathVariable Long vocabularyId,
-                                               @PathVariable Long folderId) {
+    @DeleteMapping("/{folderId}")
+    public ResponseEntity<String> deleteFolder(@PathVariable Long vocabularyId, @PathVariable Long folderId) {
         folderService.deleteFolderInVocabulary(vocabularyId, folderId);
         return new ResponseEntity<>("Folder successfully deleted!", HttpStatus.OK);
     }

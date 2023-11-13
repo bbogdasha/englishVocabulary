@@ -2,18 +2,15 @@ package com.bogdan.vocabulary.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "vocabularies")
@@ -40,8 +37,84 @@ public class Vocabulary {
     private String description;
 
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Folder> folders;
+
+    public Integer getVocabularyId() {
+        return vocabularyId;
+    }
+
+    public void setVocabularyId(Integer vocabularyId) {
+        this.vocabularyId = vocabularyId;
+    }
+
+    public UUID getNativeLanguageId() {
+        return nativeLanguageId;
+    }
+
+    public void setNativeLanguageId(UUID nativeLanguageId) {
+        this.nativeLanguageId = nativeLanguageId;
+    }
+
+    public UUID getLearnLanguageId() {
+        return learnLanguageId;
+    }
+
+    public void setLearnLanguageId(UUID learnLanguageId) {
+        this.learnLanguageId = learnLanguageId;
+    }
+
+    public String getVocabularyName() {
+        return vocabularyName;
+    }
+
+    public void setVocabularyName(String vocabularyName) {
+        this.vocabularyName = vocabularyName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public List<Folder> getFolders() {
+        return folders;
+    }
+
+    public void setFolders(List<Folder> folders) {
+        this.folders = folders;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vocabulary that = (Vocabulary) o;
+        return vocabularyId.equals(that.vocabularyId)
+                && nativeLanguageId.equals(that.nativeLanguageId)
+                && learnLanguageId.equals(that.learnLanguageId)
+                && vocabularyName.equals(that.vocabularyName)
+                && description.equals(that.description)
+                && createdAt.equals(that.createdAt)
+                && folders.equals(that.folders);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vocabularyId, nativeLanguageId, learnLanguageId,
+                vocabularyName, description, createdAt, folders);
+    }
 }

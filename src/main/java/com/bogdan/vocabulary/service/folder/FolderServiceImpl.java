@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -50,7 +49,9 @@ public class FolderServiceImpl implements FolderService {
 
         return new PageSettingsDto<>(
                 folderPagePage.getContent().stream().map(folderConverter::convertToDto).toList(),
-                folderPagePage.getTotalElements()
+                folderPagePage.getTotalElements(),
+                folderPagePage.getNumber(),
+                folderPagePage.getNumberOfElements()
         );
     }
 
@@ -75,7 +76,6 @@ public class FolderServiceImpl implements FolderService {
         Folder folder = folderConverter.convertToEntity(folderDto);
         folder.setVocabulary(vocabulary);
         folder.setWords(new ArrayList<>());
-        folder.setCreatedAt(LocalDateTime.now());
         Folder savedFolder = folderRepository.save(folder);
 
         return folderConverter.convertToDto(savedFolder);

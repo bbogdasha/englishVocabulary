@@ -7,12 +7,11 @@ import com.bogdan.vocabulary.model.WordFilter;
 import com.bogdan.vocabulary.model.WordUpdateRequest;
 
 import java.util.List;
-import java.util.Map;
 
 public interface WordService {
 
-    PageSettingsDto<WordDto> getAllWordsByVocabularyAndFolder(Long vocabularyId, Long folderId,
-                                                              PageSettings pageSettings, WordFilter filter);
+    PageSettingsDto<WordDto> getAllWordsByVocabularyAndFolder(
+            Long vocabularyId, Long folderId, PageSettings pageSettings, WordFilter filter);
 
     WordDto getWordByVocabularyAndFolder(Long vocabularyId, Long folderId, Long wordId);
 
