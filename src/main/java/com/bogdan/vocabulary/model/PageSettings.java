@@ -1,13 +1,12 @@
 package com.bogdan.vocabulary.model;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-import java.util.Locale;
+import java.util.Objects;
 
-@Slf4j
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PageSettings {
 
     private Integer page = 0;
@@ -18,19 +17,51 @@ public class PageSettings {
 
     private String sortField = "created_at";
 
-    public Sort buildSort() {
-        sortOrder = sortOrder.toLowerCase(Locale.ROOT);
-        switch (sortOrder) {
-            case "asc" -> {
-                return Sort.by(sortField).ascending();
-            }
-            case "desc" -> {
-                return Sort.by(sortField).descending();
-            }
-            default -> {
-                log.warn("Invalid direction provided in PageSettings, using ascending direction as default value");
-                return Sort.by(sortField).ascending();
-            }
-        }
+    public Integer getPage() {
+        return page;
+    }
+
+    public void setPage(Integer page) {
+        this.page = page;
+    }
+
+    public int getElementPerPage() {
+        return elementPerPage;
+    }
+
+    public void setElementPerPage(int elementPerPage) {
+        this.elementPerPage = elementPerPage;
+    }
+
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public String getSortField() {
+        return sortField;
+    }
+
+    public void setSortField(String sortField) {
+        this.sortField = sortField;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PageSettings that = (PageSettings) o;
+        return elementPerPage == that.elementPerPage
+                && page.equals(that.page)
+                && sortOrder.equals(that.sortOrder)
+                && sortField.equals(that.sortField);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(page, elementPerPage, sortOrder, sortField);
     }
 }

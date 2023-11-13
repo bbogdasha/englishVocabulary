@@ -3,9 +3,7 @@ package com.bogdan.vocabulary.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -14,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "vocabularies")
-public class Vocabulary {
+public class Vocabulary extends DataAudit {
 
     @Id
     @SequenceGenerator(
@@ -35,9 +33,6 @@ public class Vocabulary {
     private String vocabularyName;
 
     private String description;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Folder> folders;
@@ -82,14 +77,6 @@ public class Vocabulary {
         this.description = description;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public List<Folder> getFolders() {
         return folders;
     }
@@ -108,13 +95,12 @@ public class Vocabulary {
                 && learnLanguageId.equals(that.learnLanguageId)
                 && vocabularyName.equals(that.vocabularyName)
                 && description.equals(that.description)
-                && createdAt.equals(that.createdAt)
                 && folders.equals(that.folders);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(vocabularyId, nativeLanguageId, learnLanguageId,
-                vocabularyName, description, createdAt, folders);
+                vocabularyName, description, folders);
     }
 }

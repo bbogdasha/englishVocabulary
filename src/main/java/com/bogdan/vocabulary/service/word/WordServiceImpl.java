@@ -8,6 +8,7 @@ import com.bogdan.vocabulary.exception.generalException.VocabularyNotFoundExcept
 import com.bogdan.vocabulary.exception.generalException.VocabularyValidationException;
 import com.bogdan.vocabulary.model.*;
 import com.bogdan.vocabulary.repository.WordRepository;
+import com.bogdan.vocabulary.service.PageSettingsService;
 import com.bogdan.vocabulary.service.folder.FolderServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class WordServiceImpl implements WordService {
+public class WordServiceImpl extends PageSettingsService implements WordService {
 
     private final WordRepository wordRepository;
 
@@ -38,8 +39,6 @@ public class WordServiceImpl implements WordService {
 
     private static final String WORD_NOT_FOUND = "Word [id = %d] not found.";
 
-    private static final String SORT_FILTER_NOT_FOUND = "Column [%s] not found.";
-
     private static final List<String> SORT_COLUMN = Arrays.asList("created_at", "word", "translation");
 
     @Override
@@ -48,11 +47,7 @@ public class WordServiceImpl implements WordService {
                                                                      PageSettings pageSettings, WordFilter filter) {
         folderService.getFolderByVocabulary(vocabularyId, folderId);
 
-        if (!SORT_COLUMN.contains(pageSettings.getSortField())) {
-            throw new VocabularyValidationException(String.format(SORT_FILTER_NOT_FOUND, pageSettings.getSortField()));
-        }
-
-        Sort wordSort = pageSettings.buildSort();
+        Sort wordSort = buildSort(SORT_COLUMN, pageSettings);
         Pageable pageRequest = PageRequest.of(pageSettings.getPage(), pageSettings.getElementPerPage(), wordSort);
         Page<Word> wordsPage = wordRepository.findAllWordsByVocabularyIdAndFolderId(vocabularyId, folderId, pageRequest, filter);
 
@@ -87,7 +82,6 @@ public class WordServiceImpl implements WordService {
         if (!wordsDto.isEmpty()) {
             for (WordDto wordDto : wordsDto) {
                 Word word = wordConverter.convertToEntity(wordDto);
-                refactoringWord(word);
                 word.setFolder(folder);
                 folder.getWords().add(word);
                 listSavedWords.add(word);
@@ -132,7 +126,6 @@ public class WordServiceImpl implements WordService {
             throw new VocabularyValidationException("No data changes found");
         }
 
-        refactoringWord(word);
         wordRepository.save(word);
         return wordConverter.convertToDto(word);
     }
@@ -151,16 +144,4 @@ public class WordServiceImpl implements WordService {
         wordRepository.deleteById(wordId);
     }
 
-    private void refactoringWord(Word word) {
-        word.setWord(word.getWord().trim());
-        word.setTranslation(word.getTranslation().trim());
-
-        if (word.getExample() != null) {
-            word.setExample(word.getExample().trim());
-        }
-
-        if (word.getWord().contains("\n") || word.getWord().contains("\r")) {
-            word.setWord(word.getWord().replaceAll("\r\n|\r|\n", " "));
-        }
-    }
 }

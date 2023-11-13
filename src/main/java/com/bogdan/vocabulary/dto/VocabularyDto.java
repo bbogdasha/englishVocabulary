@@ -1,7 +1,9 @@
 package com.bogdan.vocabulary.dto;
 
 import com.bogdan.vocabulary.model.Folder;
+import com.bogdan.vocabulary.util.WhiteSpaceRemovalDeserializer;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -39,10 +41,12 @@ public class VocabularyDto {
     @Pattern(regexp = "^[a-zA-Z0-9\" \"]+('[a-zA-Z0-9])?[a-zA-Z0-9\" \"]",
             message = "Invalid 'name' format.")
     @Size(max = 60, message = "Too many characters in 'vocabularyName'. Vocabulary name length: 1-120.")
+    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
     private String vocabularyName;
 
     @JsonView(View.SummaryVocabulary.class)
     @Size(max = 120, message = "Too many characters in 'description'. Description length: 1-120.")
+    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
     private String description;
 
     @JsonView(View.SummaryVocabulary.class)

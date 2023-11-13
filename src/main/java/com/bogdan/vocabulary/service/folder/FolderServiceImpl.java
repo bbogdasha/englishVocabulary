@@ -6,11 +6,9 @@ import com.bogdan.vocabulary.dto.FolderDto;
 import com.bogdan.vocabulary.dto.PageSettingsDto;
 import com.bogdan.vocabulary.exception.generalException.VocabularyNotFoundException;
 import com.bogdan.vocabulary.exception.generalException.VocabularyValidationException;
-import com.bogdan.vocabulary.model.Folder;
-import com.bogdan.vocabulary.model.FolderUpdateRequest;
-import com.bogdan.vocabulary.model.PageSettings;
-import com.bogdan.vocabulary.model.Vocabulary;
+import com.bogdan.vocabulary.model.*;
 import com.bogdan.vocabulary.repository.FolderRepository;
+import com.bogdan.vocabulary.service.PageSettingsService;
 import com.bogdan.vocabulary.service.vocabulary.VocabularyServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,12 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class FolderServiceImpl implements FolderService {
+public class FolderServiceImpl extends PageSettingsService implements FolderService {
 
     private final FolderRepository folderRepository;
 
@@ -38,12 +38,14 @@ public class FolderServiceImpl implements FolderService {
 
     private static final String FOLDER_NOT_FOUND = "Folder [id = %d] not found.";
 
+    private static final List<String> SORT_COLUMN = Arrays.asList("created_at", "folder_name", "description");
+
     @Override
     @Transactional(readOnly = true)
     public PageSettingsDto<FolderDto> getAllFoldersByVocabulary(Long vocabularyId, PageSettings pageSettings, String filter) {
         vocabularyService.getVocabulary(vocabularyId);
 
-        Sort folderSort = pageSettings.buildSort();
+        Sort folderSort = buildSort(SORT_COLUMN, pageSettings);
         Pageable pageRequest = PageRequest.of(pageSettings.getPage(), pageSettings.getElementPerPage(), folderSort);
         Page<Folder> folderPagePage = folderRepository.findAllFoldersByVocabularyId(vocabularyId, pageRequest, filter);
 

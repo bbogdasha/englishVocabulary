@@ -13,13 +13,15 @@
 	<artifactId>vocabulary-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>vocabulary</name>
-	<description>English Vocabulary project</description>
+	<description>Vocabulary-api project</description>
 
 	<properties>
 		<java.version>17</java.version>
-
 		<sonar.organization>bbogdasha</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<docker.username>bogdash</docker.username>
+		<docker.image.name>vocabulary-api</docker.image.name>
+		<docker.image.tag/>
 	</properties>
 
 	<dependencies>
@@ -95,6 +97,34 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<!-- Jib is a Maven plugin for building Docker and OCI images for your Java applications. -->
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<from>
+						<image>eclipse-temurin:17</image>
+						<platforms>
+							<platform>
+								<architecture>arm64</architecture>
+								<os>linux</os>
+							</platform>
+							<platform>
+								<architecture>amd64</architecture>
+								<os>linux</os>
+							</platform>
+						</platforms>
+					</from>
+					<to>
+						<image>docker.io/${docker.username}/${docker.image.name}:${project.version}</image>
+						<tags>
+							<tag>latest</tag>
+						</tags>
+					</to>
 				</configuration>
 			</plugin>
 		</plugins>

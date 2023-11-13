@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: vocabulary-postgres
+    image: postgres:15.4
+    environment:
+      POSTGRES_USER: bogdan
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5232:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  vocabulary-api:
+    container_name: vocabulary-api
+    image: bogdash/vocabulary-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/vocabulary
+    ports:
+      - "8088:8080"
+    networks:
+      - postgres
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: vocabulary-pgadmin
+    image: dpage/pgadmin4:7.8
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:

@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,7 +12,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "folders")
-public class Folder {
+public class Folder extends DataAudit {
 
     @Id
     @SequenceGenerator(
@@ -31,9 +29,6 @@ public class Folder {
     private String folderName;
 
     private String description;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vocabulary_id")
@@ -67,14 +62,6 @@ public class Folder {
         this.description = description;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Vocabulary getVocabulary() {
         return vocabulary;
     }
@@ -99,13 +86,12 @@ public class Folder {
         return folderId.equals(folder.folderId)
                 && folderName.equals(folder.folderName)
                 && description.equals(folder.description)
-                && createdAt.equals(folder.createdAt)
                 && vocabulary.equals(folder.vocabulary)
                 && words.equals(folder.words);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(folderId, folderName, description, createdAt, vocabulary, words);
+        return Objects.hash(folderId, folderName, description, vocabulary, words);
     }
 }

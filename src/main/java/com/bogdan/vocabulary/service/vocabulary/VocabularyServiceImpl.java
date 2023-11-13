@@ -11,6 +11,7 @@ import com.bogdan.vocabulary.model.Vocabulary;
 import com.bogdan.vocabulary.model.PageSettings;
 import com.bogdan.vocabulary.model.VocabularyUpdateRequest;
 import com.bogdan.vocabulary.repository.VocabularyRepository;
+import com.bogdan.vocabulary.service.PageSettingsService;
 import com.bogdan.vocabulary.service.language.LanguageServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,7 @@ import java.util.*;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class VocabularyServiceImpl implements VocabularyService {
+public class VocabularyServiceImpl extends PageSettingsService implements VocabularyService {
 
     private final VocabularyRepository vocabularyRepository;
 
@@ -34,6 +35,8 @@ public class VocabularyServiceImpl implements VocabularyService {
     private final VocabularyConverter vocabularyConverter;
 
     private static final String VOCABULARY_NOT_FOUND = "Vocabulary [id = %d] not found.";
+
+    private static final List<String> SORT_COLUMN = Arrays.asList("created_at", "vocabulary_name", "description");
 
     @Override
     @Transactional
@@ -52,7 +55,7 @@ public class VocabularyServiceImpl implements VocabularyService {
     @Transactional(readOnly = true)
     public PageSettingsDto<VocabularyDto> getAllVocabularies(PageSettings pageSettings, String filter) {
 
-        Sort vocabularySort = pageSettings.buildSort();
+        Sort vocabularySort = buildSort(SORT_COLUMN, pageSettings);
         Pageable pageRequest = PageRequest.of(pageSettings.getPage(), pageSettings.getElementPerPage(), vocabularySort);
         Page<Vocabulary> vocabularyPage = vocabularyRepository.findAllVocabularies(pageRequest, filter);
 

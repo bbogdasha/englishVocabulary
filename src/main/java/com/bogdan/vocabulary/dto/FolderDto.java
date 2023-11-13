@@ -2,7 +2,9 @@ package com.bogdan.vocabulary.dto;
 
 import com.bogdan.vocabulary.model.Vocabulary;
 import com.bogdan.vocabulary.model.Word;
+import com.bogdan.vocabulary.util.WhiteSpaceRemovalDeserializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -23,9 +25,11 @@ public class FolderDto {
 
     @NotBlank(message = "Folder name cannot be empty.")
     @Size(max = 64, message = "Too many characters in 'folder name'. Folder name: 1-64.")
+    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
     private String folderName;
 
     @Size(max = 120, message = "Too many characters in 'description'. Description length: 1-120.")
+    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
     private String description;
 
     private LocalDateTime createdAt;
